@@ -1,0 +1,532 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+    <title>福大树洞</title>
+
+    <style>
+
+        *{
+            margin:0;
+            padding:0;
+            box-sizing:border-box;
+        }
+
+        body{
+            font-family:"Microsoft YaHei",sans-serif;
+            background:#f5f7fa;
+        }
+
+        /* 顶部 */
+
+        .header{
+            background:#b31b1b;
+            color:white;
+            padding:25px;
+            text-align:center;
+            box-shadow:0 2px 10px rgba(0,0,0,.15);
+        }
+
+        .header h1{
+            font-size:36px;
+        }
+
+        .header p{
+            margin-top:10px;
+            opacity:.9;
+        }
+
+        /* 内容区域 */
+
+        .container{
+            width:1000px;
+            margin:30px auto;
+        }
+
+        /* 卡片 */
+
+        .card{
+            background:white;
+            border-radius:12px;
+            padding:20px;
+            margin-bottom:20px;
+            box-shadow:0 3px 12px rgba(0,0,0,.08);
+        }
+
+        .card-title{
+            color:#b31b1b;
+            font-size:22px;
+            margin-bottom:15px;
+        }
+
+        /* 输入框 */
+
+        input,
+        textarea{
+            width:100%;
+            padding:12px;
+            margin-top:10px;
+            border:1px solid #ddd;
+            border-radius:8px;
+            font-size:15px;
+        }
+
+        input:focus,
+        textarea:focus{
+            outline:none;
+            border-color:#b31b1b;
+        }
+
+        /* 按钮 */
+
+        .btn{
+            margin-top:15px;
+            background:#b31b1b;
+            color:white;
+            border:none;
+            border-radius:8px;
+            padding:10px 20px;
+            cursor:pointer;
+        }
+
+        .btn:hover{
+            background:#921616;
+        }
+
+        /* 双列 */
+
+        .row{
+            display:flex;
+            gap:20px;
+        }
+
+        .col{
+            flex:1;
+        }
+
+        /* 状态 */
+
+        .status{
+            margin-top:10px;
+            color:#666;
+        }
+
+        /* 帖子 */
+
+        .post{
+            padding:15px 0;
+            border-bottom:1px solid #eee;
+        }
+
+        .post-title{
+            color:#b31b1b;
+            font-size:20px;
+            margin-bottom:8px;
+        }
+
+        .post-content{
+            color:#444;
+            line-height:1.8;
+        }
+
+        /* 页脚 */
+
+        .footer{
+            text-align:center;
+            color:#888;
+            padding:25px;
+        }
+
+    </style>
+</head>
+<body>
+
+<div class="header">
+    <h1>福大树洞</h1>
+    <p>Fuzhou University Tree Hole</p>
+</div>
+
+<div class="container">
+
+    <!-- 注册登录 -->
+
+    <div class="row" id="loginArea">
+
+        <div class="col">
+
+            <div class="card">
+
+                <div class="card-title">
+                    用户注册
+                </div>
+
+                <input id="rname"
+                       placeholder="请输入用户名">
+
+                <input id="rpassword"
+                       type="password"
+                       placeholder="请输入密码">
+
+                <button class="btn"
+                        onclick="registerUser()">
+                    注册
+                </button>
+
+            </div>
+
+        </div>
+
+        <div class="col">
+
+            <div class="card">
+
+                <div class="card-title">
+                    用户登录
+                </div>
+
+                <input id="lname"
+                       placeholder="请输入用户名">
+
+                <input id="lpassword"
+                       type="password"
+                       placeholder="请输入密码">
+
+                <button class="btn"
+                        onclick="loginUser()">
+                    登录
+                </button>
+
+                <div class="status"
+                     id="loginStatus">
+                    当前未登录
+                </div>
+
+            </div>
+
+        </div>
+
+    </div>
+
+    <!-- 发帖区域 -->
+
+    <div class="card"
+         id="postArea"
+         style="display:none">
+
+        <div class="card-title">
+            发布树洞
+        </div>
+
+        <input id="title"
+               placeholder="请输入标题">
+
+        <textarea id="content"
+                  rows="6"
+                  placeholder="说点什么吧..."></textarea>
+
+        <button class="btn"
+                onclick="publishPost()">
+            发布
+        </button>
+
+    </div>
+
+    <!-- 树洞广场 -->
+
+    <div class="card"
+         id="forumArea"
+         style="display:none">
+
+        <div class="card-title">
+            树洞广场
+        </div>
+
+        <input
+                id="searchTitle"
+                placeholder="输入标题关键字搜索">
+
+        <button class="btn"
+                onclick="searchPosts()">
+            搜索
+        </button>
+
+        <button class="btn"
+                onclick="loadPosts()">
+            查看全部
+        </button>
+
+        <button class="btn"
+                onclick="loadPosts()">
+            刷新树洞
+        </button>
+
+        <div class="status"
+             id="status">
+            登录后即可查看树洞内容
+        </div>
+
+        <div id="postList"></div>
+
+    </div>
+
+</div>
+
+<div class="footer">
+    © 福州大学校园交流平台
+</div>
+<script>
+
+    /* 注册 */
+
+    function registerUser(){
+
+        let name =
+            document.getElementById("rname").value;
+
+        let password =
+            document.getElementById("rpassword").value;
+
+        fetch("/register",{
+
+            method:"POST",
+
+            headers:{
+                "Content-Type":
+                "application/x-www-form-urlencoded"
+            },
+
+            body:
+                "name="+encodeURIComponent(name)
+                +"&password="+encodeURIComponent(password)
+
+        })
+
+        .then(res=>res.json())
+
+        .then(data=>{
+
+            alert(data.data || data.msg);
+
+        });
+    }
+
+    /* 登录 */
+
+    function loginUser(){
+
+        let name =
+            document.getElementById("lname").value;
+
+        let password =
+            document.getElementById("lpassword").value;
+
+        fetch("/login",{
+
+            method:"POST",
+
+            headers:{
+                "Content-Type":
+                "application/x-www-form-urlencoded"
+            },
+
+            body:
+                "name="+encodeURIComponent(name)
+                +"&password="+encodeURIComponent(password)
+
+        })
+
+        .then(res=>res.json())
+
+        .then(data=>{
+
+            alert(data.data || data.msg);
+
+            if(data.code === 200){
+
+    // 隐藏登录注册区域
+    document
+        .getElementById("loginArea")
+        .style.display = "none";
+
+    // 显示发帖区域
+    document
+        .getElementById("postArea")
+        .style.display = "block";
+
+    // 显示树洞广场
+    document
+        .getElementById("forumArea")
+        .style.display = "block";
+
+    document
+        .getElementById("loginStatus")
+        .innerText =
+        "当前用户：" + name;
+
+    loadPosts();
+}
+
+        });
+    }
+
+    /* 发帖 */
+
+    function publishPost(){
+
+        let title =
+            document.getElementById("title").value;
+
+        let content =
+            document.getElementById("content").value;
+
+        fetch("/post",{
+
+            method:"POST",
+
+            headers:{
+                "Content-Type":"application/json"
+            },
+
+            body:JSON.stringify({
+
+                title:title,
+                content:content
+
+            })
+
+        })
+
+        .then(res=>res.json())
+
+        .then(data=>{
+
+            alert(data.data || data.msg);
+
+            if(data.code === 200){
+                loadPosts();
+            }
+
+        });
+    }
+
+    /* 搜索帖子 */
+    function searchPosts(){
+
+    let title =
+        document.getElementById("searchTitle").value;
+
+    if(title.trim() === ""){
+
+        alert("请输入搜索内容");
+        return;
+    }
+
+    fetch(
+        "/posts/search?title="
+        + encodeURIComponent(title)
+    )
+
+    .then(res=>res.json())
+
+    .then(data=>{
+
+        if(data.code !== 200){
+
+            alert(data.msg);
+            return;
+        }
+
+        let posts = data.data;
+
+        let html = "";
+
+        for(let i=0;i<posts.length;i++){
+
+            html += `
+
+            <div class="post">
+
+                <div class="post-title">
+                    ${posts[i].title}
+                </div>
+
+                <div class="post-content">
+                    ${posts[i].content}
+                </div>
+
+            </div>
+
+            `;
+        }
+
+        document
+            .getElementById("postList")
+            .innerHTML = html;
+
+        document
+            .getElementById("status")
+            .innerText =
+            "搜索到 "
+            + posts.length
+            + " 条结果";
+    });
+
+}
+
+    /* 查询帖子 */
+
+    function loadPosts(){
+
+        fetch("/posts")
+
+        .then(res=>res.json())
+
+        .then(data=>{
+
+            if(data.code !== 200){
+
+                alert(data.msg);
+                return;
+            }
+
+            let posts = data.data;
+
+            let html = "";
+
+            for(let i=0;i<posts.length;i++){
+
+                html += `
+
+                <div class="post">
+
+                    <div class="post-title">
+                        ${posts[i].title}
+                    </div>
+
+                    <div class="post-content">
+                        ${posts[i].content}
+                    </div>
+
+                </div>
+
+                `;
+            }
+
+            document
+                .getElementById("postList")
+                .innerHTML = html;
+
+            document
+                .getElementById("status")
+                .innerText =
+                "当前共有 "+posts.length+" 条树洞";
+
+        });
+    }
+
+</script>
+
+</body>
+</html>
