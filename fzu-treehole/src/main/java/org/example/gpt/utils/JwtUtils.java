@@ -21,11 +21,11 @@ public class JwtUtils {
 
 
 
-    public String createjwt(int userid){
+    public String createjwt(Long userid){
         // 创建JWT构建器实例
 
          String token = Jwts.builder()
-                .setSubject("userid")
+                .setSubject(userid.toString())
                 // 创建时间
                 .setIssuedAt(
                         new Date()
@@ -49,6 +49,7 @@ public class JwtUtils {
                 // 生成字符串
                 .compact();
 
+        System.out.println(token);
         return token;
 
     }
