@@ -3,6 +3,8 @@ package org.example.gpt.controller;
 import org.example.gpt.common.Result;
 import org.example.gpt.entity.user;
 import org.example.gpt.service.userservice;
+import org.example.gpt.utils.JwtUtils;
+import org.example.gpt.vo.loginvo;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PostMapping;
@@ -15,6 +17,12 @@ import java.util.List;
 
 @RestController
 public class hellocontroller {
+
+    @Autowired
+    private loginvo loginvo;
+
+    @Autowired
+    private JwtUtils jwtUtils;
 
     @Autowired
     private userservice userservice;
@@ -35,7 +43,11 @@ public class hellocontroller {
         return Result.success("添加成功") ;
     }
     @PostMapping("/login")
-    public Result<String> login(String name, String password, HttpSession session) {
+    public Result login(String name, String password, HttpSession session) {
+
+
+
+
         user user = userservice.get(name);
         if (user == null) {
             return Result.error("用户不存在");
@@ -44,12 +56,28 @@ public class hellocontroller {
             return Result.error("密码错误");
         }
 
-        session.setAttribute("user", name);
-        return Result.success("登录成功");
+        String token = jwtUtils.createjwt((long)user.getid());
+
+        loginvo loginvo = new loginvo();
+        loginvo.setMsg("登录成功");
+        loginvo.setToken(token);
+
+
+        return Result.success(loginvo);
 
     }
+
+
+
+
     @PostMapping("/register")
     public Result<String> register(String name, String password) {
+
+        if (name==null||password==null||name.trim().isEmpty()||password.trim().isEmpty()){
+            return Result.error("用户名或密码不能为空");
+        }
+
+
         user user = userservice.get(name);
         if (user != null) {
             return Result.error("用户已存在");

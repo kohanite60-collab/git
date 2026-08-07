@@ -3,6 +3,7 @@ package org.example.gpt.intercepter;
 import org.example.gpt.common.Result;
 import org.example.gpt.entity.user;
 import org.example.gpt.service.userservice;
+import org.example.gpt.utils.JwtUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 import org.springframework.web.servlet.HandlerInterceptor;
@@ -15,6 +16,9 @@ public class loginintercepter implements HandlerInterceptor {
 
     @Autowired
     userservice userservice;
+
+    @Autowired
+    JwtUtils jwtUtils;
 
     @Override
     public boolean preHandle(HttpServletRequest request, HttpServletResponse response, Object handler) throws Exception {
