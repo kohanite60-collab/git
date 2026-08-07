@@ -5,6 +5,13 @@ spring:
     password: 123456
     driver-class-name: com.mysql.cj.jdbc.Driver
 
+
+
+  redis:
+    host: 192.168.246.128
+    port: 6379
+
+
 mybatis:
   mapper-locations: classpath:mapper/*.xml
   type-aliases-package: org.example.gpt.entity
@@ -14,3 +21,6 @@ mybatis:
 server:
   port: 8080
   address: 0.0.0.0
+
+
+
