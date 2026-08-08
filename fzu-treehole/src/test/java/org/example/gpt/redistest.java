@@ -17,10 +17,11 @@ public class redistest {
 
 
 
-            redisTemplate.opsForValue()
-                    .set("name","Tom");
 
-            System.out.println(
+
+          redisTemplate.opsForValue()
+                    .set("name","zhangsan");  System.out.println(
+
                     redisTemplate.opsForValue()
                             .get("name")
             );

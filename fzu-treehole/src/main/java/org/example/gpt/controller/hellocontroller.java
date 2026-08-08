@@ -6,6 +6,7 @@ import org.example.gpt.service.userservice;
 import org.example.gpt.utils.JwtUtils;
 import org.example.gpt.vo.loginvo;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.data.redis.core.RedisTemplate;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
@@ -14,9 +15,13 @@ import org.springframework.web.bind.annotation.RestController;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpSession;
 import java.util.List;
+import java.util.concurrent.TimeUnit;
 
 @RestController
 public class hellocontroller {
+
+    @Autowired
+    private RedisTemplate redisTemplate;
 
     @Autowired
     private loginvo loginvo;
@@ -43,7 +48,7 @@ public class hellocontroller {
         return Result.success("添加成功") ;
     }
     @PostMapping("/login")
-    public Result login(String name, String password, HttpSession session) {
+    public Result login(String name, String password) {
 
 
 
@@ -61,6 +66,11 @@ public class hellocontroller {
         loginvo loginvo = new loginvo();
         loginvo.setMsg("登录成功");
         loginvo.setToken(token);
+
+
+        Long userid=(long)user.getid();
+
+        redisTemplate.opsForValue().set(token,userid,1, TimeUnit.DAYS);
 
 
         return Result.success(loginvo);
@@ -88,5 +98,11 @@ public class hellocontroller {
         userservice.add(user);
         return Result.success("注册成功");
     }
+
+
+    @GetMapping("/hello")
+    public Result hello() {
+
+        return Result.success("hello youwin");}
 
 }

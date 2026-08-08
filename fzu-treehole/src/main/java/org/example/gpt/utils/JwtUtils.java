@@ -35,7 +35,7 @@ public class JwtUtils {
                 .setExpiration(
                         new Date(
                                 System.currentTimeMillis()
-                                        + 1000 * 60 * 60 * 2
+                                        + 1000 * 60 * 60 * 24
                         )
                 )
 
